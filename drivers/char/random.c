@@ -264,6 +264,8 @@
 #include <asm/irq_regs.h>
 #include <asm/io.h>
 
+#include <linux/prng.h>
+
 #define CREATE_TRACE_POINTS
 #include <trace/events/random.h>
 
@@ -658,6 +660,7 @@ retry:
 		if (r == &nonblocking_pool) {
 			prandom_reseed_late();
 			pr_notice("random: %s pool is initialized\n", r->name);
+			prng_proc_stop();
 		}
 	}
 
@@ -736,6 +739,8 @@ void add_device_randomness(const void *buf, unsigned int size)
 {
 	unsigned long time = random_get_entropy() ^ jiffies;
 	unsigned long flags;
+
+	prng_proc_update(buf, size, __func__);
 
 	trace_add_device_randomness(size, _RET_IP_);
 	spin_lock_irqsave(&input_pool.lock, flags);
@@ -1235,7 +1240,7 @@ void get_random_bytes_arch(void *buf, int nbytes)
 
 		if (!arch_get_random_long(&v))
 			break;
-		
+
 		memcpy(p, &v, chunk);
 		p += chunk;
 		nbytes -= chunk;
