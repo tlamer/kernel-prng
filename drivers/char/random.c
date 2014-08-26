@@ -741,6 +741,7 @@ void add_device_randomness(const void *buf, unsigned int size, const char *func)
 	unsigned long flags;
 
 	prng_proc_update(buf, size, func);
+	prng_proc_update(&time, sizeof(time), func);
 
 	trace_add_device_randomness(size, _RET_IP_);
 	spin_lock_irqsave(&input_pool.lock, flags);
@@ -767,7 +768,7 @@ static struct timer_rand_state input_timer_state = INIT_TIMER_RAND_STATE;
  * keyboard scan codes, and 256 upwards for interrupts.
  *
  */
-static void add_timer_randomness(struct timer_rand_state *state, unsigned num)
+static void add_timer_randomness(struct timer_rand_state *state, unsigned num, const char *func)
 {
 	struct entropy_store	*r;
 	struct {
@@ -784,6 +785,9 @@ static void add_timer_randomness(struct timer_rand_state *state, unsigned num)
 	sample.num = num;
 	r = nonblocking_pool.initialized ? &input_pool : &nonblocking_pool;
 	mix_pool_bytes(r, &sample, sizeof(sample), NULL);
+
+	if (nonblocking_pool.initialized)
+		prng_proc_update(&sample, sizeof(sample), func);
 
 	/*
 	 * Calculate number of bits of randomness we probably added.
@@ -833,7 +837,7 @@ void add_input_randomness(unsigned int type, unsigned int code,
 
 	last_value = value;
 	add_timer_randomness(&input_timer_state,
-			     (type << 4) ^ code ^ (code >> 4) ^ value);
+			     (type << 4) ^ code ^ (code >> 4) ^ value, __func__);
 	trace_add_input_randomness(ENTROPY_BITS(&input_pool));
 }
 EXPORT_SYMBOL_GPL(add_input_randomness);
@@ -870,6 +874,9 @@ void add_interrupt_randomness(int irq, int irq_flags)
 	r = nonblocking_pool.initialized ? &input_pool : &nonblocking_pool;
 	__mix_pool_bytes(r, &fast_pool->pool, sizeof(fast_pool->pool), NULL);
 
+	if (nonblocking_pool.initialized)
+		prng_proc_update(&fast_pool->pool, sizeof(fast_pool->pool), __func__);
+
 	/*
 	 * If we don't have a valid cycle counter, and we see
 	 * back-to-back timer interrupts, then skip giving credit for
@@ -893,6 +900,9 @@ void add_interrupt_randomness(int irq, int irq_flags)
 	if (arch_get_random_seed_long(&seed)) {
 		__mix_pool_bytes(r, &seed, sizeof(seed), NULL);
 		credit += sizeof(seed) * 4;
+
+		if (nonblocking_pool.initialized)
+			prng_proc_update(&seed, sizeof(seed), __func__);
 	}
 
 	credit_entropy_bits(r, credit);
@@ -904,7 +914,7 @@ void add_disk_randomness(struct gendisk *disk)
 	if (!disk || !disk->random)
 		return;
 	/* first major is 1, so we get >= 0x200 here */
-	add_timer_randomness(disk->random, 0x100 + disk_devt(disk));
+	add_timer_randomness(disk->random, 0x100 + disk_devt(disk), __func__);
 	trace_add_disk_randomness(disk_devt(disk), ENTROPY_BITS(&input_pool));
 }
 EXPORT_SYMBOL_GPL(add_disk_randomness);
