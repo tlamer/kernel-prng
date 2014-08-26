@@ -9,7 +9,7 @@
 
 char prng_proc_buffer[PRNG_BUFFER_SIZE];
 int prng_proc_offset = 0;
-short prng_proc_on = 1;
+unsigned int prng_proc_on = 1;
 
 void prng_proc_stop(void) {
 	pr_notice("random: stopping gathering data for /proc/prng");
