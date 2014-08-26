@@ -122,7 +122,7 @@ static int __init dmi_walk_early(void (*decode)(const struct dmi_header *,
 
 	dmi_table(buf, dmi_len, dmi_num, decode, NULL);
 
-	add_device_randomness(buf, dmi_len);
+	add_device_randomness(buf, dmi_len, __func__);
 
 	dmi_early_unmap(buf, dmi_len);
 	return 0;

@@ -76,7 +76,7 @@ static void add_early_randomness(struct hwrng *rng)
 	 */
 	bytes_read = rng_get_data(rng, bytes, sizeof(bytes), 1);
 	if (bytes_read > 0)
-		add_device_randomness(bytes, bytes_read);
+		add_device_randomness(bytes, bytes_read, __func__);
 }
 
 static inline int hwrng_init(struct hwrng *rng)

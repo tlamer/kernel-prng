@@ -1086,7 +1086,7 @@ static void fw_device_init(struct work_struct *work)
 
 		set_broadcast_channel(device, device->generation);
 
-		add_device_randomness(&device->config_rom[3], 8);
+		add_device_randomness(&device->config_rom[3], 8, __func__);
 	}
 
 	/*

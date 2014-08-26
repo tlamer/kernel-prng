@@ -133,7 +133,7 @@ static int sunxi_sid_probe(struct platform_device *pdev)
 	entropy = kzalloc(sizeof(u8) * sid_data->keysize, GFP_KERNEL);
 	for (i = 0; i < sid_data->keysize; i++)
 		entropy[i] = sunxi_sid_read_byte(sid_data, i);
-	add_device_randomness(entropy, sid_data->keysize);
+	add_device_randomness(entropy, sid_data->keysize, __func__);
 	kfree(entropy);
 
 	dev_dbg(&pdev->dev, "loaded\n");

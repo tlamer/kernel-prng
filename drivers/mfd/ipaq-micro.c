@@ -257,7 +257,7 @@ static void ipaq_micro_eeprom_dump(struct ipaq_micro *micro)
 	if (str) {
 		dev_info(micro->dev, "serial number: %s\n", str);
 		/* Feed the random pool with this */
-		add_device_randomness(str, strlen(str));
+		add_device_randomness(str, strlen(str), __func__);
 		kfree(str);
 	}
 	str = ipaq_micro_str(dump+50, 20);

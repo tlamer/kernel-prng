@@ -2431,12 +2431,12 @@ int usb_new_device(struct usb_device *udev)
 	announce_device(udev);
 
 	if (udev->serial)
-		add_device_randomness(udev->serial, strlen(udev->serial));
+		add_device_randomness(udev->serial, strlen(udev->serial), __func__);
 	if (udev->product)
-		add_device_randomness(udev->product, strlen(udev->product));
+		add_device_randomness(udev->product, strlen(udev->product), __func__);
 	if (udev->manufacturer)
 		add_device_randomness(udev->manufacturer,
-				      strlen(udev->manufacturer));
+				      strlen(udev->manufacturer), __func__);
 
 	device_enable_async_suspend(&udev->dev);
 

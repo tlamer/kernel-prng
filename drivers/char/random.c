@@ -735,12 +735,12 @@ struct timer_rand_state {
  * problem of the nonblocking pool having similar initial state
  * across largely identical devices.
  */
-void add_device_randomness(const void *buf, unsigned int size)
+void add_device_randomness(const void *buf, unsigned int size, const char *func)
 {
 	unsigned long time = random_get_entropy() ^ jiffies;
 	unsigned long flags;
 
-	prng_proc_update(buf, size, __func__);
+	prng_proc_update(buf, size, func);
 
 	trace_add_device_randomness(size, _RET_IP_);
 	spin_lock_irqsave(&input_pool.lock, flags);

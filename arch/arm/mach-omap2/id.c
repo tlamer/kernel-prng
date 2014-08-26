@@ -137,7 +137,7 @@ static int __init omap_feed_randpool(void)
 
 	/* Throw the die ID into the entropy pool at boot */
 	omap_get_die_id(&odi);
-	add_device_randomness(&odi, sizeof(odi));
+	add_device_randomness(&odi, sizeof(odi), __func__);
 	return 0;
 }
 omap_device_initcall(omap_feed_randpool);

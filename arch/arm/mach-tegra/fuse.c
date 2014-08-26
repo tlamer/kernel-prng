@@ -161,7 +161,7 @@ static void __init tegra20_fuse_init_randomness(void)
 	randomness[0] = tegra_fuse_readl(FUSE_UID_LOW);
 	randomness[1] = tegra_fuse_readl(FUSE_UID_HIGH);
 
-	add_device_randomness(randomness, sizeof(randomness));
+	add_device_randomness(randomness, sizeof(randomness), __func__);
 }
 
 /* Applies to Tegra30 or later */
@@ -177,7 +177,7 @@ static void __init tegra30_fuse_init_randomness(void)
 	randomness[5] = tegra_fuse_readl(FUSE_X_COORDINATE);
 	randomness[6] = tegra_fuse_readl(FUSE_Y_COORDINATE);
 
-	add_device_randomness(randomness, sizeof(randomness));
+	add_device_randomness(randomness, sizeof(randomness), __func__);
 }
 
 void __init tegra_init_fuse(void)
@@ -233,7 +233,7 @@ void __init tegra_init_fuse(void)
 	randomness[3] = (tegra_cpu_process_id << 16) | tegra_core_process_id;
 	randomness[4] = (tegra_cpu_speedo_id << 16) | tegra_soc_speedo_id;
 
-	add_device_randomness(randomness, sizeof(randomness));
+	add_device_randomness(randomness, sizeof(randomness), __func__);
 	switch (tegra_chip_id) {
 	case TEGRA20:
 		tegra20_fuse_init_randomness();
