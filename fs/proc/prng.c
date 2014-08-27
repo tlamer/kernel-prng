@@ -34,8 +34,9 @@ int prng_proc_update(const void *r, size_t size, const char *caller)
 
 		// store data size and data itself into the buffer
 		memcpy(prng_proc_buffer + prng_proc_offset, &size, sz);
-		memcpy(prng_proc_buffer + prng_proc_offset + sz, r, sizeof(*r));
-		prng_proc_offset += 4 + sz;
+		prng_proc_offset += sz;
+		memcpy(prng_proc_buffer + prng_proc_offset, r, size);
+		prng_proc_offset += size;
 	}
 	return 0;
 }
