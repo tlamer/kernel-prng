@@ -661,6 +661,7 @@ retry:
 			prandom_reseed_late();
 			pr_notice("random: %s pool is initialized\n", r->name);
 			prng_input_proc_stop();
+			prng_nonblocking_proc_stop();
 		}
 	}
 
@@ -743,6 +744,9 @@ void add_device_randomness(const void *buf, unsigned int size, const char *func)
 	prng_input_proc_update(buf, size, func);
 	prng_input_proc_update(&time, sizeof(time), func);
 
+	prng_nonblocking_proc_update(buf, size, func);
+	prng_nonblocking_proc_update(&time, sizeof(time), func);
+
 	trace_add_device_randomness(size, _RET_IP_);
 	spin_lock_irqsave(&input_pool.lock, flags);
 	_mix_pool_bytes(&input_pool, buf, size, NULL);
@@ -786,8 +790,11 @@ static void add_timer_randomness(struct timer_rand_state *state, unsigned num, c
 	r = nonblocking_pool.initialized ? &input_pool : &nonblocking_pool;
 	mix_pool_bytes(r, &sample, sizeof(sample), NULL);
 
-	if (nonblocking_pool.initialized)
+	if (nonblocking_pool.initialized) {
 		prng_input_proc_update(&sample, sizeof(sample), func);
+	} else {
+		prng_nonblocking_proc_update(&sample, sizeof(sample), func);
+	}
 
 	/*
 	 * Calculate number of bits of randomness we probably added.
@@ -874,8 +881,12 @@ void add_interrupt_randomness(int irq, int irq_flags)
 	r = nonblocking_pool.initialized ? &input_pool : &nonblocking_pool;
 	__mix_pool_bytes(r, &fast_pool->pool, sizeof(fast_pool->pool), NULL);
 
-	if (nonblocking_pool.initialized)
+	if (nonblocking_pool.initialized) {
 		prng_input_proc_update(&fast_pool->pool, sizeof(fast_pool->pool), __func__);
+	} else {
+		prng_nonblocking_proc_update(&fast_pool->pool, sizeof(fast_pool->pool), __func__);
+	}
+
 
 	/*
 	 * If we don't have a valid cycle counter, and we see
@@ -901,8 +912,12 @@ void add_interrupt_randomness(int irq, int irq_flags)
 		__mix_pool_bytes(r, &seed, sizeof(seed), NULL);
 		credit += sizeof(seed) * 4;
 
-		if (nonblocking_pool.initialized)
+		if (nonblocking_pool.initialized) {
 			prng_input_proc_update(&seed, sizeof(seed), __func__);
+		} else {
+			prng_nonblocking_proc_update(&seed, sizeof(seed), __func__);
+		}
+
 	}
 
 	credit_entropy_bits(r, credit);
