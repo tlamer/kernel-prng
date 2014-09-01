@@ -660,7 +660,7 @@ retry:
 		if (r == &nonblocking_pool) {
 			prandom_reseed_late();
 			pr_notice("random: %s pool is initialized\n", r->name);
-			prng_proc_stop();
+			prng_input_proc_stop();
 		}
 	}
 
@@ -740,8 +740,8 @@ void add_device_randomness(const void *buf, unsigned int size, const char *func)
 	unsigned long time = random_get_entropy() ^ jiffies;
 	unsigned long flags;
 
-	prng_proc_update(buf, size, func);
-	prng_proc_update(&time, sizeof(time), func);
+	prng_input_proc_update(buf, size, func);
+	prng_input_proc_update(&time, sizeof(time), func);
 
 	trace_add_device_randomness(size, _RET_IP_);
 	spin_lock_irqsave(&input_pool.lock, flags);
@@ -787,7 +787,7 @@ static void add_timer_randomness(struct timer_rand_state *state, unsigned num, c
 	mix_pool_bytes(r, &sample, sizeof(sample), NULL);
 
 	if (nonblocking_pool.initialized)
-		prng_proc_update(&sample, sizeof(sample), func);
+		prng_input_proc_update(&sample, sizeof(sample), func);
 
 	/*
 	 * Calculate number of bits of randomness we probably added.
@@ -875,7 +875,7 @@ void add_interrupt_randomness(int irq, int irq_flags)
 	__mix_pool_bytes(r, &fast_pool->pool, sizeof(fast_pool->pool), NULL);
 
 	if (nonblocking_pool.initialized)
-		prng_proc_update(&fast_pool->pool, sizeof(fast_pool->pool), __func__);
+		prng_input_proc_update(&fast_pool->pool, sizeof(fast_pool->pool), __func__);
 
 	/*
 	 * If we don't have a valid cycle counter, and we see
@@ -902,7 +902,7 @@ void add_interrupt_randomness(int irq, int irq_flags)
 		credit += sizeof(seed) * 4;
 
 		if (nonblocking_pool.initialized)
-			prng_proc_update(&seed, sizeof(seed), __func__);
+			prng_input_proc_update(&seed, sizeof(seed), __func__);
 	}
 
 	credit_entropy_bits(r, credit);
