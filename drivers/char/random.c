@@ -741,11 +741,15 @@ void add_device_randomness(const void *buf, unsigned int size, const char *func)
 	unsigned long time = random_get_entropy() ^ jiffies;
 	unsigned long flags;
 
-	prng_input_proc_update(buf, size, func);
-	prng_input_proc_update(&time, sizeof(time), func);
+	char longfunc[128];
+	strcpy(longfunc, "add_device_randomness");
+	strcat(longfunc, func);
 
-	prng_nonblocking_proc_update(buf, size, func);
-	prng_nonblocking_proc_update(&time, sizeof(time), func);
+	prng_input_proc_update(buf, size, longfunc);
+	prng_input_proc_update(&time, sizeof(time), longfunc);
+
+	prng_nonblocking_proc_update(buf, size, longfunc);
+	prng_nonblocking_proc_update(&time, sizeof(time), longfunc);
 
 	trace_add_device_randomness(size, _RET_IP_);
 	spin_lock_irqsave(&input_pool.lock, flags);

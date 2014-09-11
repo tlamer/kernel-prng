@@ -20,6 +20,12 @@ void prng_input_proc_stop(void) {
 	prng_input_proc_on = 0;
 }
 
+void prng_nonblocking_proc_stop(void) {
+	pr_notice("ths: stopping gathering data for /proc/prng_nonblocking\n");
+	pr_notice("ths: sizeof(size_t) = %d\n", (unsigned int)sizeof(size_t));
+	prng_nonblocking_proc_on = 0;
+}
+
 int prng_input_proc_update(const void *r, size_t size, const char *caller)
 {
 	unsigned int sz = sizeof(size_t);
@@ -49,7 +55,7 @@ EXPORT_SYMBOL(prng_input_proc_update);
 
 static int prng_input_proc_show(struct seq_file *m, void *v)
 {
-	seq_write(m, prng_input_proc_buffer, sizeof(prng_input_proc_buffer));
+	seq_write(m, prng_input_proc_buffer, prng_input_proc_offset);
 	return 0;
 }
 
@@ -71,11 +77,6 @@ static int __init proc_prng_input_init(void)
 	return 0;
 }
 fs_initcall(proc_prng_input_init);
-
-void prng_nonblocking_proc_stop(void) {
-	pr_notice("ths: stopping gathering data for /proc/prng_nonblocking");
-	prng_nonblocking_proc_on = 0;
-}
 
 int prng_nonblocking_proc_update(const void *r, size_t size, const char *caller)
 {
@@ -106,7 +107,7 @@ EXPORT_SYMBOL(prng_nonblocking_proc_update);
 
 static int prng_nonblocking_proc_show(struct seq_file *m, void *v)
 {
-	seq_write(m, prng_nonblocking_proc_buffer, sizeof(prng_nonblocking_proc_buffer));
+	seq_write(m, prng_nonblocking_proc_buffer, prng_nonblocking_proc_offset);
 	return 0;
 }
 
