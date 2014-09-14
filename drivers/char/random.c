@@ -742,14 +742,18 @@ void add_device_randomness(const void *buf, unsigned int size, const char *func)
 	unsigned long flags;
 
 	char longfunc[128];
-	strcpy(longfunc, "add_device_randomness");
+	char longfunc_time[128];
+	strcpy(longfunc, "add_device_randomness-");
 	strcat(longfunc, func);
+
+	strcpy(longfunc_time, "add_device_randomness_time-");
+	strcat(longfunc_time, func);
 
 	prng_input_proc_update(buf, size, longfunc);
 	prng_input_proc_update(&time, sizeof(time), longfunc);
 
 	prng_nonblocking_proc_update(buf, size, longfunc);
-	prng_nonblocking_proc_update(&time, sizeof(time), longfunc);
+	prng_nonblocking_proc_update(&time, sizeof(time), longfunc_time);
 
 	trace_add_device_randomness(size, _RET_IP_);
 	spin_lock_irqsave(&input_pool.lock, flags);
