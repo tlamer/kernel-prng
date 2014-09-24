@@ -750,7 +750,7 @@ void add_device_randomness(const void *buf, unsigned int size, const char *func)
 	strcat(longfunc_time, func);
 
 	prng_input_proc_update(buf, size, longfunc);
-	prng_input_proc_update(&time, sizeof(time), longfunc);
+	prng_input_proc_update(&time, sizeof(time), longfunc_time);
 
 	prng_nonblocking_proc_update(buf, size, longfunc);
 	prng_nonblocking_proc_update(&time, sizeof(time), longfunc_time);
