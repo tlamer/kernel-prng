@@ -21,10 +21,11 @@ void prng_input_proc_stop(void) {
 }
 
 void prng_nonblocking_proc_stop(void) {
-	pr_notice("ths: stopping gathering data for /proc/prng_nonblocking\n");
 	pr_notice("ths: sizeof(size_t) = %d\n", (unsigned int)sizeof(size_t));
 	pr_notice("ths: sizeof(unsigned) = %d\n", (unsigned int)sizeof(unsigned));
 	pr_notice("ths: sizeof(long) = %d\n", (unsigned int)sizeof(long));
+	pr_notice("ths: sizeof(unsigned long) = %d\n", (unsigned int)sizeof(unsigned long));
+	pr_notice("ths: stopping gathering data for /proc/prng_nonblocking\n");
 	prng_nonblocking_proc_on = 0;
 }
 

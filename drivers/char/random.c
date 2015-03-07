@@ -660,8 +660,8 @@ retry:
 		if (r == &nonblocking_pool) {
 			prandom_reseed_late();
 			pr_notice("random: %s pool is initialized\n", r->name);
-			prng_input_proc_stop();
 			prng_nonblocking_proc_stop();
+			prng_input_proc_stop();
 		}
 	}
 
