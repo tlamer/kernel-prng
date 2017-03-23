@@ -29,7 +29,8 @@ Results so far
 
 There are several functions in the kernel that pass the entropy to internal
 kernel pool. My researched showed that only few of them  provided seemingly
-random data while others passed predictable data based on the hardware used.
+random data while others passed predictable data based on the hardware used. See
+more in [docs](https://github.com/tlamer/kernel-prng/tree/master/docs).
 
 Plans
 -----
