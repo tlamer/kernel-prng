@@ -1,0 +1,16 @@
+[Unit]
+Description=upload data
+ConditionFileIsExecutable=/home/fedora/data_save_auto.sh
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/fedora/data_save_auto.sh
+TimeoutSec=0
+RemainAfterExit=yes
+SysVStartPriority=99
+User=fedora
+Group=fedora
+
+[Install]
+WantedBy=multi-user.target
